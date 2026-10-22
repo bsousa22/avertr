@@ -29,6 +29,8 @@
 #' match one of the 14 AVERT regions.
 #' @param avert_main_module_filepath A string giving a filepath to an empty
 #' version of the AVERT Main Module (v4.3) which has been saved as a .xlsx file.
+#' For 2024 runs, use the AVERT v4.4 provisional Main Module instead, since
+#' v4.3 does not contain 2024 data.
 #' @param avertr_rdf_filepath A string giving a filepath to the avertr regional
 #' data file for the year and region.
 #' @param apply_reduction_top_x_pct_hours A number from 0 to 100 giving the top
@@ -130,9 +132,7 @@ generate_reduction <- function(
   hourly_load_reduction <- rep(0, yr_hrs)
 
   # This is the T&D losses for the region
-  t_and_d_loss_factor <- t_and_d_losses |>
-    dplyr::filter(`Data year` == project_year) |>
-    dplyr::pull(project_region)
+  t_and_d_loss_factor <- get_t_and_d_loss_factor(project_year, project_region)
 
 
 
@@ -333,9 +333,7 @@ adjust_reduction <- function(
     project_year,
     project_region
 ) {
-  t_and_d_loss_factor <- t_and_d_losses |>
-    dplyr::filter(`Data year` == project_year) |>
-    dplyr::pull(project_region)
+  t_and_d_loss_factor <- get_t_and_d_loss_factor(project_year, project_region)
 
   adjusted_hourly_load_reduction <- unadjusted_hourly_load_reduction / (1 - t_and_d_loss_factor)
 

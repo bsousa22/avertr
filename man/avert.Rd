@@ -27,7 +27,9 @@ match one of the 14 AVERT regions.}
 data file for the year and region.}
 
 \item{avert_main_module_filepath}{A string giving a filepath to an empty
-version of the AVERT Main Module (v4.3) which has been saved as a .xlsx file.}
+version of the AVERT Main Module (v4.3) which has been saved as a .xlsx file.
+For 2024 runs, use the AVERT v4.4 provisional Main Module instead, since
+v4.3 does not contain 2024 data.}
 }
 \value{
 A list with three elements:

@@ -1,10 +1,14 @@
 # A script to generate the standard avertr RDFs using prepare_rdfs()
-# Runs 2017 through 2023 for all 14 regions each year
+# Runs all 14 regions for each year in `years` (defined below). Defaults to
+#   2017 through 2023. To generate the provisional 2024 RDFs (from AVERT v4.4
+#   provisional), set `years <- 2024`. The 2017-2023 AVERT RDFs are identical
+#   in v4.3 and v4.4, so they don't need to be regenerated.
 # Assumes:
 #   1. You're running from a working directory which contains a directory
 #   named regional_data_files
-#   2. regional_data_files contains 7 folders named 2017, 2018, . . ., 2023
-#   3. Each of those 7 folders contains all 14 AVERT regional data files for the
+#   2. regional_data_files contains a folder for each year in `years` (e.g.,
+#   2017, 2018, . . ., 2023)
+#   3. Each of those folders contains all 14 AVERT regional data files for the
 #   corresponding year.
 #   4. The file names for the AVERT regional data files within each folder are
 #   such that, if you sort them alphabetically by file name, they will be in the
@@ -19,6 +23,8 @@
 
 library(avertr)
 
+years <- 2017:2023
+
 # Create the top-level directory for storing the rdfs, if it doesn't exist
 if (!dir.exists(file.path(".", "avertr_rdfs"))) {
   dir.create(file.path(".", "avertr_rdfs"))
@@ -26,13 +32,11 @@ if (!dir.exists(file.path(".", "avertr_rdfs"))) {
 
 # Create all the directories for storing each year's avertr rdfs, if they don't
 #   already exist
-for (i in 2017:2023) {
+for (i in years) {
   if (!dir.exists(file.path(".", "avertr_rdfs", i))) {
     dir.create(file.path(".", "avertr_rdfs", i))
   }
 }
-
-years <- 2017:2023
 
 region_names <- c("California", "Carolinas", "Central", "Florida", "Mid-Atlantic",
                   "Midwest", "New England", "New York", "Northwest", "Rocky Mountains",

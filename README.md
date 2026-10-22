@@ -52,6 +52,29 @@ steps required to use avertr:
     website](https://www.epa.gov/avert/download-avert#Main) and save it
     as a .xlsx file. (It will download as a .xlsb file.)
 
+### 2024 data (provisional)
+
+The EPA has released 2024 regional data files as part of AVERT v4.4,
+which is a provisional draft that has not been formally released. avertr
+can run 2024 scenarios, but v4.3 remains the default for 2017-2023. To
+run 2024 scenarios:
+
+1.  Download the 2024 avertr regional data files.
+2.  Download the AVERT Main Module v4.4 provisional
+    (`avert-main-module-v4.4-provisional.xlsb`) from [the EPA’s AVERT
+    GitHub
+    repository](https://github.com/USEPA/AVERT/tree/master/excel/v4.4%20provisional%20draft%20(May%202025)/AVERT%20Main%20Module)
+    and save it as a .xlsx file. The v4.3 Main Module does not contain
+    2024 data, so 2024 runs require v4.4.
+3.  Note that 2024 is a leap year, so hourly vectors must be 8784
+    elements long.
+
+The 2017-2023 regional data files are identical in v4.3 and v4.4, but
+v4.4 revises the 2022 and 2023 PM2.5, VOC, and NH3 emission rates. So if
+you run 2022 or 2023 with the v4.4 Main Module, PM2.5, VOC, and NH3
+results will differ from v4.3. Use the v4.3 Main Module for 2017-2023 to
+match AVERT v4.3.
+
 ## Requirements
 
 The 14 avertr regional data files for a single given year are together

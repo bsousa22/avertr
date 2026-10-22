@@ -28,6 +28,8 @@
 #' match one of the 14 AVERT regions.
 #' @param avert_main_module_filepath A string giving a filepath to an empty
 #' version of the AVERT Main Module (v4.3) which has been saved as a .xlsx file.
+#' For 2024 runs, use the AVERT v4.4 provisional Main Module instead, since
+#' v4.3 does not contain 2024 data.
 #' @param avertr_rdf_filepath A string giving a filepath to the avertr regional
 #' data file for the year and region.
 #'
@@ -419,15 +421,17 @@ avert <- function(hourly_load_reduction, project_year, project_region,
   # Some EGUs have infrequent SO2 emission events; here we zero them
 
   # The Library sheet has multiple tables in it, so get the start row of the
-  #   infrequent SO2 EGU table.
+  #   infrequent SO2 EGU table. Match on the table number only, since table
+  #   titles change between AVERT versions (e.g., v4.4 renamed Table 4 from
+  #   "VMT assumptions" to "VMT per vehicle assumptions").
   infrequent_so2_table_start_row <- infrequent_so2_event_egus_raw |>
-    dplyr::filter(character == "Table 3: EGUs with infrequent SO2 emission events") |>
+    dplyr::filter(stringr::str_detect(character, "^Table 3:")) |>
     dplyr::pull(row) |>
     # Add four to account for header rows
     (\(x) x + 4)()
 
   infrequent_so2_table_end_row <- infrequent_so2_event_egus_raw |>
-    dplyr::filter(character == "Table 4: VMT assumptions") |>
+    dplyr::filter(stringr::str_detect(character, "^Table 4:")) |>
     dplyr::pull(row) |>
     # Subtract 1 to get to the previous row
     (\(x) x - 1)()
@@ -652,7 +656,9 @@ t_and_d_losses <- dplyr::tribble(
   2020,	0.05172798625659540000,	0.07583310655814570000,	0.08277487483998240000,
   2021,	0.04953529078533420000,	0.07502408315789370000,	0.08387150639006530000,
   2022,	0.04579138198800580000,	0.07230646441341050000,	0.08669949540288220000,
-  2023,	0.04579138198800580000,	0.07230646441341050000,	0.08669949540288220000
+  2023,	0.04579138198800580000,	0.07230646441341050000,	0.08669949540288220000,
+  # 2024 is from the AVERT v4.4 provisional Main Module
+  2024,	0.04579138198800580000,	0.07230646441341050000,	0.08669949540288220000
 )
 
 t_and_d_losses <- t_and_d_losses |>
@@ -673,6 +679,24 @@ t_and_d_losses <- t_and_d_losses |>
     `Southwest` = `Western Interconnect`
   ) |>
   dplyr::select(!c(`Eastern Interconnect`, `Western Interconnect`))
+
+# Get the T&D loss factor for a given year and region. Throw an error if the
+#   year isn't in the table, since otherwise callers would silently get a
+#   zero-length factor.
+get_t_and_d_loss_factor <- function(project_year, project_region) {
+  if (!(project_year %in% t_and_d_losses$`Data year`)) {
+    stop(
+      paste0(
+        "No T&D loss factor available for ", project_year, ". Available years: ",
+        min(t_and_d_losses$`Data year`), "-", max(t_and_d_losses$`Data year`), "."
+      )
+    )
+  }
+
+  t_and_d_losses |>
+    dplyr::filter(`Data year` == project_year) |>
+    dplyr::pull(project_region)
+}
 
 
 
